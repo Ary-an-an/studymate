@@ -3,3 +3,4 @@ uvicorn
 pymupdf
 python-docx
 python-pptx
+python-multipart
