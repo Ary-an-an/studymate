@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StudyMate – Smart Study Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #020617;
+      --glass: rgba(15, 23, 42, 0.9);
+      --glass-soft: rgba(15, 23, 42, 0.7);
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.2);
+      --accent-strong: #0ea5e9;
+      --accent-purple: #a855f7;
+      --accent-purple-soft: rgba(168, 85, 247, 0.2);
+      --border-subtle: rgba(148, 163, 184, 0.25);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --success: #4ade80;
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 20px 50px rgba(15, 23, 42, 0.85);
+      --shadow-subtle: 0 12px 32px rgba(15, 23, 42, 0.7);
+      --blur-strong: 22px;
+      --blur-soft: 14px;
+      --transition-fast: 0.18s ease-out;
+      --transition-med: 0.25s ease-out;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 45%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .app-shell {
+      position: relative;
+      width: 100%;
+      max-width: 1380px;
+      height: calc(100vh - 36px);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.16), transparent 55%),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 2.1fr) 260px;
+      grid-template-rows: auto minmax(0, 1fr);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      backdrop-filter: blur(var(--blur-strong));
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(40px);
+      opacity: 0.7;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .orb.orb-blue {
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.55), transparent 70%);
+      top: -60px;
+      left: -40px;
+    }
+
+    .orb.orb-purple {
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.55), transparent 70%);
+      bottom: -80px;
+      right: -40px;
+    }
+
+    .app-header {
+      grid-column: 1 / 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px 10px 20px;
+      z-index: 2;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 16px;
+      background: conic-gradient(from 210deg, #38bdf8, #a855f7, #22c55e, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0b1120;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9), 0 14px 32px rgba(15, 23, 42, 0.95);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+    }
+
+    .header-btn {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+      color: var(--text-main);
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+        border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .header-btn span.icon {
+      font-size: 14px;
+    }
+
+    .header-btn.primary {
+      border-color: rgba(56, 189, 248, 0.7);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent 60%),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+    }
+
+    .header-btn.upload {
+      border-color: rgba(56, 189, 248, 0.9);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.35), transparent 60%),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+      color: #e0f2fe;
+    }
+
+    .header-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.9);
+      border-color: rgba(148, 163, 184, 0.7);
+    }
+
+    .header-btn.primary:hover,
+    .header-btn.upload:hover {
+      border-color: rgba(56, 189, 248, 1);
+    }
+
+    .sidebar {
+      grid-row: 2 / 3;
+      grid-column: 1 / 2;
+      padding: 8px 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1;
+    }
+
+    .glass-panel {
+      background: var(--glass);
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-subtle);
+      padding: 12px 12px 10px 12px;
+      backdrop-filter: blur(var(--blur-soft));
+    }
+
+    .sidebar-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-section-title span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.7);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat-card {
+      border-radius: 14px;
+      padding: 8px 9px;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 60%),
+        rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .stat-chip {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--accent);
+    }
+
+    .model-card {
+      margin-top: 6px;
+      border-radius: 16px;
+      padding: 9px 10px;
+      background:
+        radial-gradient(circle at top right, rgba(168, 85, 247, 0.22), transparent 60%),
+        rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .model-name {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .model-pill {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--accent-purple);
+    }
+
+    .model-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .model-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .model-meta span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+    }
+
+    .sidebar-list {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-item {
+      font-size: 12px;
+      padding: 7px 9px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: default;
+    }
+
+    .sidebar-item span.label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-item span.badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--accent);
+    }
+
+    .chat-column {
+      grid-row: 2 / 3;
+      grid-column: 2 / 3;
+      padding: 8px 10px 16px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-radius: 22px;
+      background: var(--glass);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-subtle);
+      overflow: hidden;
+      backdrop-filter: blur(var(--blur-soft));
+    }
+
+    .chat-header {
+      padding: 10px 14px 8px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .chat-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-title-pill {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .chat-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chat-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+
+    .message-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      animation: msgIn 0.22s ease-out;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .avatar.user {
+      background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
+      color: #0b1120;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .avatar.ai {
+      background: radial-gradient(circle at top left, #a855f7, #6366f1);
+      color: #0b1120;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .bubble-wrapper {
+      max-width: 82%;
+    }
+
+    .bubble {
+      padding: 10px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      position: relative;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.96);
+      transform-origin: top left;
+      animation: bubbleIn 0.22s ease-out;
+      white-space: pre-wrap;
+    }
+
+    .bubble.user-bubble {
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), rgba(15, 23, 42, 0.98));
+      border-color: rgba(56, 189, 248, 0.7);
+    }
+
+    .bubble.ai-bubble {
+      background:
+        radial-gradient(circle at top left, rgba(168, 85, 247, 0.22), rgba(15, 23, 42, 0.98));
+      border-color: rgba(168, 85, 247, 0.7);
+    }
+
+    .bubble-meta {
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .typing-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.8);
+      animation: bounce 0.9s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+      40% { transform: translateY(-3px); opacity: 1; }
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .chat-footer {
+      padding: 10px 12px 10px 12px;
+      border-top: 1px solid rgba(51, 65, 85, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-shell {
+      flex: 1;
+      position: relative;
+    }
+
+    #userInput {
+      width: 100%;
+      padding: 10px 12px 10px 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+        background var(--transition-fast), transform var(--transition-fast);
+    }
+
+    #userInput::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    #userInput:focus {
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+      background: rgba(15, 23, 42, 0.98);
+      transform: translateY(-1px);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    #sendBtn {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.9);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.35), rgba(15, 23, 42, 0.98));
+      color: #e0f2fe;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+        background var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    #sendBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+      border-color: rgba(56, 189, 248, 1);
+    }
+
+    #sendBtn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .footer-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .footer-meta-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kbd {
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.96);
+      font-size: 10px;
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .suggestions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .suggestion-pill {
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast),
+        transform var(--transition-fast), color var(--transition-fast);
+    }
+
+    .suggestion-pill:hover {
+      background: rgba(15, 23, 42, 0.98);
+      border-color: rgba(56, 189, 248, 0.8);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .history-column {
+      grid-row: 2 / 3;
+      grid-column: 3 / 4;
+      padding: 8px 16px 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .history-panel {
+      flex: 1;
+      border-radius: 20px;
+      background: var(--glass);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-subtle);
+      padding: 10px 12px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      backdrop-filter: blur(var(--blur-soft));
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .history-title {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .history-title span.icon {
+      font-size: 15px;
+    }
+
+    .history-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .history-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .history-btn {
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background var(--transition-fast), border-color var(--transition-fast),
+        transform var(--transition-fast), color var(--transition-fast);
+    }
+
+    .history-btn:hover {
+      background: rgba(15, 23, 42, 0.98);
+      border-color: rgba(56, 189, 248, 0.8);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .history-list {
+      flex: 1;
+      border-radius: 14px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.96);
+      padding: 6px 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .history-empty {
+      font-size: 11px;
+      color: rgba(148, 163, 184, 0.85);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 4px;
+    }
+
+    .history-item {
+      border-radius: 10px;
+      padding: 6px 7px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: background var(--transition-fast), border-color var(--transition-fast),
+        transform var(--transition-fast);
+    }
+
+    .history-item:hover {
+      background: rgba(15, 23, 42, 0.98);
+      border-color: rgba(56, 189, 248, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .history-item-question {
+      font-size: 11px;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-item-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mode-option {
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #e5e7eb;
+    }
+
+    .mode-option:hover {
+      background: rgba(30, 64, 175, 0.6);
+    }
+
+    @media (max-width: 1150px) {
+      .app-shell {
+        grid-template-columns: 240px minmax(0, 2.1fr);
+      }
+      .history-column {
+        display: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 10px;
+      }
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        height: calc(100vh - 20px);
+      }
+      .sidebar {
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+      .sidebar .glass-panel {
+        min-width: 220px;
+      }
+      .chat-column {
+        grid-column: 1 / 2;
+        grid-row: 3 / 4;
+      }
+      .history-column {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .app-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .header-right {
+        align-self: stretch;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <div class="orb orb-blue"></div>
+    <div class="orb orb-purple"></div>
+
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">S</div>
+        <div class="brand-text">
+          <div class="brand-title">
+            StudyMate
+            <span class="brand-pill">Study Copilot</span>
+          </div>
+          <div class="brand-subtitle">
+            Upload notes, ask questions, get teacher‑level explanations.
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          Backends online
+        </div>
+        <button class="header-btn upload" id="headerUploadBtn">
+          <span class="icon">📂</span>
+          Upload files
+        </button>
+        <button class="header-btn" id="modeBtn">
+          <span class="icon">🎛️</span>
+          <span id="modeLabel">Mode: Short</span>
+        </button>
+        <button class="header-btn">
+          <span class="icon">⚙️</span>
+          Settings
+        </button>
+        <button class="header-btn primary" id="newSessionBtn">
+          <span class="icon">✨</span>
+          New session
+        </button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="glass-panel">
+        <div class="sidebar-section-title">
+          <span>Session overview</span>
+          <span class="dot"></span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">Questions asked</div>
+            <div class="stat-value">
+              <span id="statQuestions">0</span>
+              <span class="stat-chip">this session</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Files attached</div>
+            <div class="stat-value">
+              <span id="statFiles">0</span>
+              <span class="stat-chip">PDF / PPTX / DOCX</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="model-card">
+          <div class="model-name">
+            Llama 3
+            <span class="model-pill">Local AI</span>
+          </div>
+          <div class="model-meta">
+            <span><span class="dot"></span> Ready</span>
+            <span>Context aware • Teacher mode</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <div class="sidebar-section-title">
+          <span>Quick modes</span>
+          <span class="dot"></span>
+        </div>
+
+        <div class="sidebar-list">
+          <div class="sidebar-item">
+            <span class="label">🧠 Concept explainer</span>
+            <span class="badge">Default</span>
+          </div>
+          <div class="sidebar-item">
+            <span class="label">📝 Exam revision</span>
+            <span class="badge">Focused</span>
+          </div>
+          <div class="sidebar-item">
+            <span class="label">📚 Summarise chapter</span>
+            <span class="badge">Long notes</span>
+          </div>
+          <div class="sidebar-item">
+            <span class="label">🎯 Quiz me</span>
+            <span class="badge">Active recall</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="chat-column">
+      <section class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-title">
+              Study chat
+              <span class="chat-title-pill">Teacher mode</span>
+            </div>
+            <div class="chat-subtitle">
+              Ask questions about your uploaded material or anything you’re revising.
+            </div>
+          </div>
+          <div class="chat-header-right">
+            <div class="chip">
+              <span class="dot"></span>
+              Live reasoning
+            </div>
+            <div class="chip">
+              🧩 Uses your files as context
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-body" id="chatScroll"></div>
+
+        <div class="chat-footer">
+          <div class="input-row">
+            <div class="input-shell">
+              <span class="input-icon">💬</span>
+              <input
+                id="userInput"
+                type="text"
+                placeholder="Ask a question like “Explain slide 5 in simple terms”"
+              />
+            </div>
+            <button id="sendBtn">
+              <span>Send</span>
+              <span>➤</span>
+            </button>
+          </div>
+
+          <div class="footer-meta-row">
+            <span>
+              <span class="kbd">Enter</span> to send
+              <span class="kbd">Shift + Enter</span> for new line
+            </span>
+            <span>
+              Answers are generated locally with your study material as context.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <div class="glass-panel">
+        <div class="sidebar-section-title">
+          <span>Try asking</span>
+          <span class="dot"></span>
+        </div>
+        <div class="suggestions-row">
+          <button class="suggestion-pill" data-suggest="Summarise the key ideas from this file.">
+            Summarise the key ideas
+          </button>
+          <button class="suggestion-pill" data-suggest="Create 5 exam-style questions from this material.">
+            Create exam-style questions
+          </button>
+          <button class="suggestion-pill" data-suggest="Explain the most important formula in simple terms.">
+            Explain the main formula
+          </button>
+          <button class="suggestion-pill" data-suggest="Give me a step-by-step explanation as if I am 15.">
+            Explain it like I’m 15
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="history-column">
+      <section class="history-panel">
+        <div class="history-header">
+          <div>
+            <div class="history-title">
+              <span class="icon">🕒</span>
+              Chat history
+            </div>
+            <div class="history-subtitle">
+              Revisit previous questions and jump back into any point.
+            </div>
+          </div>
+          <div class="history-actions">
+            <button class="history-btn" id="clearHistoryBtn">
+              <span>🧹</span> Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="history-list" id="historyList">
+          <div class="history-empty" id="historyEmpty">
+            <span>💡</span>
+            No history yet. Ask something and it will appear here.
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- Mode menu -->
+  <div id="modeMenu" style="
+    position: fixed;
+    top: 60px;
+    right: 160px;
+    background: rgba(15,23,42,0.98);
+    border: 1px solid rgba(148,163,184,0.5);
+    border-radius: 12px;
+    padding: 6px;
+    font-size: 12px;
+    display: none;
+    z-index: 50;
+  ">
+    <div class="mode-option" data-mode="short">Short answers</div>
+    <div class="mode-option" data-mode="exam">Exam mode</div>
+    <div class="mode-option" data-mode="explain10">Explain like I’m 10</div>
+    <div class="mode-option" data-mode="summary">Summary mode</div>
+    <div class="mode-option" data-mode="flashcards">Flashcard mode</div>
+    <div class="mode-option" data-mode="quiz">Quiz mode</div>
+  </div>
+
+  <!-- Hidden multi-file input -->
+  <input type="file" id="fileInput" style="display:none" multiple />
+
+  <script>
+    const chatScroll = document.getElementById("chatScroll");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const suggestionPills = document.querySelectorAll(".suggestion-pill");
+
+    const headerUploadBtn = document.getElementById("headerUploadBtn");
+    const fileInput = document.getElementById("fileInput");
+
+    const statQuestions = document.getElementById("statQuestions");
+    const statFiles = document.getElementById("statFiles");
+
+    const historyList = document.getElementById("historyList");
+    const historyEmpty = document.getElementById("historyEmpty");
+    const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+    const newSessionBtn = document.getElementById("newSessionBtn");
+
+    const modeBtn = document.getElementById("modeBtn");
+    const modeLabel = document.getElementById("modeLabel");
+    const modeMenu = document.getElementById("modeMenu");
+
+    let studyMaterial = "";
+    let questionCount = 0;
+    let fileCount = 0;
+    let isTyping = false;
+    let typingRow = null;
+    let history = [];
+    let selectedMode = "short";
+
+    function saveHistory() {
+      try {
+        localStorage.setItem("studymate_history", JSON.stringify(history));
+      } catch (e) {
+        console.error("Failed to save history", e);
+      }
+    }
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem("studymate_history");
+        if (!raw) return;
+        history = JSON.parse(raw) || [];
+        renderHistory();
+      } catch (e) {
+        console.error("Failed to load history", e);
+      }
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = "";
+      if (!history.length) {
+        historyList.appendChild(historyEmpty);
+        historyEmpty.style.display = "flex";
+        return;
+      }
+      historyEmpty.style.display = "none";
+
+      history.forEach((item, index) => {
+        const el = document.createElement("div");
+        el.className = "history-item";
+        el.dataset.index = index.toString();
+
+        const q = document.createElement("div");
+        q.className = "history-item-question";
+        q.textContent = item.question;
+
+        const meta = document.createElement("div");
+        meta.className = "history-item-meta";
+        meta.innerHTML = `
+          <span>${item.time}</span>
+          <span>${item.fromFile ? "📂 with file" : "💬 chat"}</span>
+        `;
+
+        el.appendChild(q);
+        el.appendChild(meta);
+        el.addEventListener("click", () => {
+          userInput.value = item.question;
+          userInput.focus();
+        });
+
+        historyList.appendChild(el);
+      });
+    }
+
+    function addToHistory(question, fromFile) {
+      const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      history.unshift({ question, time, fromFile });
+      if (history.length > 50) history.pop();
+      saveHistory();
+      renderHistory();
+    }
+
+    function addMessage(text, sender) {
+      const row = document.createElement("div");
+      row.className = "message-row " + (sender === "user" ? "user" : "ai");
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar " + (sender === "user" ? "user" : "ai");
+      avatar.textContent = sender === "user" ? "U" : "S";
+
+      const bubbleWrapper = document.createElement("div");
+      bubbleWrapper.className = "bubble-wrapper";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + (sender === "user" ? "user-bubble" : "ai-bubble");
+      bubble.textContent = text;
+
+      const meta = document.createElement("div");
+      meta.className = "bubble-meta";
+      const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      meta.textContent = sender === "user" ? `You • ${time}` : `StudyMate • ${time}`;
+
+      bubbleWrapper.appendChild(bubble);
+      bubbleWrapper.appendChild(meta);
+
+      if (sender === "user") {
+        row.appendChild(bubbleWrapper);
+        row.appendChild(avatar);
+      } else {
+        row.appendChild(avatar);
+        row.appendChild(bubbleWrapper);
+      }
+
+      chatScroll.appendChild(row);
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+      return bubble;
+    }
+
+    function showTypingIndicator() {
+      if (isTyping) return;
+      isTyping = true;
+
+      typingRow = document.createElement("div");
+      typingRow.className = "message-row ai";
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar ai";
+      avatar.textContent = "S";
+
+      const bubbleWrapper = document.createElement("div");
+      bubbleWrapper.className = "bubble-wrapper";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble ai-bubble";
+
+      const typing = document.createElement("div");
+      typing.className = "typing-indicator";
+      typing.innerHTML = `
+        Thinking
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      `;
+
+      bubble.appendChild(typing);
+      bubbleWrapper.appendChild(bubble);
+
+      typingRow.appendChild(avatar);
+      typingRow.appendChild(bubbleWrapper);
+
+      chatScroll.appendChild(typingRow);
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      if (!isTyping || !typingRow) return;
+      typingRow.remove();
+      typingRow = null;
+      isTyping = false;
+    }
+
+    async function typeOutText(bubble, fullText) {
+      const speed = 2;
+      bubble.textContent = "";
+      let i = 0;
+
+      return new Promise((resolve) => {
+        function step() {
+          if (i >= fullText.length) {
+            bubble.textContent = fullText;
+            resolve();
+            return;
+          }
+          bubble.textContent += fullText.slice(i, i + speed);
+          i += speed;
+          chatScroll.scrollTop = chatScroll.scrollHeight;
+          requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    async function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      addMessage(message, "user");
+      userInput.value = "";
+      questionCount += 1;
+      statQuestions.textContent = questionCount.toString();
+      addToHistory(message, !!studyMaterial);
+
+      showTypingIndicator();
+
+      try {
+        const response = await fetch("http://localhost:3000/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message,
+            context: studyMaterial,
+            mode: selectedMode
+          })
+        });
+
+        const data = await response.json();
+        hideTypingIndicator();
+
+        const replyText = data.reply || "I couldn’t generate a response.";
+        const aiBubble = addMessage("", "ai");
+        await typeOutText(aiBubble, replyText);
+      } catch (err) {
+        hideTypingIndicator();
+        addMessage("There was an error talking to the AI backend.", "ai");
+        console.error(err);
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    suggestionPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        const text = pill.getAttribute("data-suggest");
+        userInput.value = text;
+        userInput.focus();
+      });
+    });
+
+    async function uploadAndExtract(files) {
+      const formData = new FormData();
+      Array.from(files).forEach(f => formData.append("files", f));
+
+      try {
+        const res = await fetch("http://localhost:8000/extract", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        const text = data.text || "";
+        const uploadedFiles = data.files || [];
+
+        studyMaterial = text;
+        fileCount += uploadedFiles.length;
+        statFiles.textContent = fileCount.toString();
+
+        addMessage(
+          `Processed ${uploadedFiles.length} file(s). Ask anything about them.`,
+          "ai"
+        );
+      } catch (err) {
+        console.error(err);
+        addMessage("Failed to process files. Check Python backend.", "ai");
+      }
+    }
+
+    fileInput.addEventListener("change", async (e) => {
+      const files = e.target.files;
+      if (!files || !files.length) return;
+      await uploadAndExtract(files);
+    });
+
+    headerUploadBtn.addEventListener("click", () => fileInput.click());
+
+    clearHistoryBtn.addEventListener("click", () => {
+      history = [];
+      saveHistory();
+      renderHistory();
+    });
+
+    newSessionBtn.addEventListener("click", () => {
+      chatScroll.innerHTML = "";
+      studyMaterial = "";
+      questionCount = 0;
+      fileCount = 0;
+      statQuestions.textContent = "0";
+      statFiles.textContent = "0";
+      addMessage(
+        "New session started. Upload fresh notes or start asking questions whenever you’re ready.",
+        "ai"
+      );
+    });
+
+    modeBtn.addEventListener("click", () => {
+      modeMenu.style.display = modeMenu.style.display === "none" ? "block" : "none";
+    });
+
+    document.querySelectorAll(".mode-option").forEach(opt => {
+      opt.addEventListener("click", () => {
+        selectedMode = opt.dataset.mode;
+        const labelMap = {
+          short: "Short",
+          exam: "Exam",
+          explain10: "Explain 10",
+          summary: "Summary",
+          flashcards: "Flashcards",
+          quiz: "Quiz"
+        };
+        modeLabel.textContent = "Mode: " + (labelMap[selectedMode] || "Short");
+        modeMenu.style.display = "none";
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!modeBtn.contains(e.target) && !modeMenu.contains(e.target)) {
+        modeMenu.style.display = "none";
+      }
+    });
+
+    addMessage(
+      "Hey, I’m StudyMate. Upload your notes using the button above, then ask me anything about them.",
+      "ai"
+    );
+
+    loadHistory();
+  </script>
+</body>
+</html>
