@@ -1403,10 +1403,7 @@
       Array.from(files).forEach(f => formData.append("files", f));
 
       try {
-        const res = await fetch("http://localhost:8000/extract", {
-          method: "POST",
-          body: formData
-        });
+        const res = await fetch("https://studymate-ymn7.onrender.com/extract", { method: "POST", body: formData });
 
         const data = await res.json();
         const text = data.text || "";
