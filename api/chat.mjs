@@ -6,7 +6,7 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: "Method not allowed" });
     }
 
-    // Parse JSON body manually
+    // Parse JSON body manually (Vercel does NOT auto-parse)
     const body = await new Promise((resolve, reject) => {
       let data = "";
       req.on("data", chunk => {
@@ -40,10 +40,10 @@ export default async function handler(req, res) {
     });
 
     const reply = completion.choices[0].message.content;
-    res.status(200).json({ reply });
+    return res.status(200).json({ reply });
 
   } catch (err) {
     console.error("Backend error:", err);
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 }
